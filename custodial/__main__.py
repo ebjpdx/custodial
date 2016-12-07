@@ -1,11 +1,20 @@
-from configparser import ConfigParser
 import platform
 import yaml
+import os
 
-
-config_file = "./config/custodial.yml"
+from custodial import chrome_history
 
 if platform.system() != 'Darwin':
   raise NotImplementedError('Only Mac is supported at this time')
-#TEST THIS
+
+#Load Configuration
+config_file = os.environ.get('CONFIG_FILE') or './config/custodial.yml'
+with open(config_file, 'r') as ymlfile:
+    config = yaml.load(ymlfile)
+
+
+chrome_history.make_local_copy(config)
+# get_urls_from_history()
+
+
 
