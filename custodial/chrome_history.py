@@ -1,10 +1,12 @@
 import os
-import re
+# import re
+import pandas as pd
 import sqlite3
-from datetime import date, datetime, timedelta
+
+from datetime import date
+from pandas.tseries.offsets import Week
 from shutil import copy
 
-import pandas as pd
 
 
 def make_local_copy(config):
@@ -19,6 +21,11 @@ def make_local_copy(config):
         copy(chrome_history_file, history_file_local_copy)
 
 
+def windows_epoch_to_datetime(win_epoch):
+    windows_to_unix_epoch_microseconds = 11644473600000000
+    return pd.to_datetime(win_epoch - windows_to_unix_epoch_microseconds, unit='us')
+
+
 def get_urls(config):
     urls = pd.read_sql(
         'select * from urls order by last_visit_time desc',
@@ -29,11 +36,55 @@ def get_urls(config):
     urls = urls[urls['visit_count'] > 0]
 
     # Convert last_visit_time
-    windows_to_unix_epoch_microseconds = 11644473600000000
 
-    urls['last_visit_time'] = pd.to_datetime(urls['last_visit_time'] - windows_to_unix_epoch_microseconds, unit='us')
+    urls['last_visit_time'] = windows_epoch_to_datetime(urls['last_visit_time'])
 
     # More cleanup here
     #  * Reduce size of data? Combine some rows based on cleaned up URLS?
 
     return urls
+
+
+def get_visits(config):
+    q = """select
+               v.id as id
+               ,u.url
+               ,u.title
+               ,v.visit_time
+               ,v.transition
+               ,v.visit_duration
+               ,v.from_visit
+               ,uf.url as from_url
+               ,uf.title as from_title
+             from visits v
+             join urls u on u.id = v.url
+             left join visits vf on vf.id=v.from_visit
+             left join urls uf on uf.id=vf.url
+             order by v.visit_time desc
+    """
+
+    visits = pd.read_sql(
+        sql=q,
+        con=sqlite3.connect(os.path.join(config['data_directory'], 'chrome_history')),
+        index_col='id'
+    )
+
+    visits['visit_time'] = windows_epoch_to_datetime(visits['visit_time'])
+    visits['visit_week'] = visits['visit_time'].apply(lambda x: Week(weekday=6, normalize=True).rollback(x))
+
+    # https://developer.chrome.com/extensions/history#type-TransitionType
+    transition_types = {
+        0: 'link',
+        1: 'typed',
+        2: 'auto_bookmark',
+        3: 'auto_subframe',
+        4: 'manual_subframe',
+        5: 'generated',
+        6: 'auto_toplevel',
+        7: 'form_submit',
+        8: 'reload',
+        9: 'keyword',
+        10: 'keyword_generated'
+    }
+    visits['transition'] = visits['transition'].apply(lambda x: transition_types[x & 0x000000FF])
+    return visits

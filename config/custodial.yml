@@ -1,2 +1,3 @@
+application_data: 'sqlite:///data/custodial.sqlite3'
 chrome_history_file: '~/Library/Application Support/Google/Chrome/Default/History'
 data_directory: 'data'
