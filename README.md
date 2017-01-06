@@ -6,6 +6,11 @@ Software design today emphasized discoverability at the expense of legibility. P
 
 Custodial is a tool to enhance the legibility of browsing. It will watch your browsing history, recommend pages to bookmark, suggest categories for these bookmarks, and recommend changes to the categorization of current bookmarks. Mac and Chrome only to start. 
 
+#### Installation 
+To create the application database and confirm configuration settings run:
+```
+python setup.py
+```
 
 #### Project Phases
 1. Create a naive Bookmarker: a process that will recommend urls to bookmark based on visit counts and timing, concurrence and length of time. 
