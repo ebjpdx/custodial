@@ -74,6 +74,10 @@ def test_get_visits_has_the_right_columns_and_types(visits):
     dt = visits.dtypes.to_dict()
     assert dt == column_types
 
+
 def test_get_visits_last_visit_time_values_are_reasonable(visits):
     assert min(visits['visit_time']) >= pd.to_datetime('2000')
 
+
+def test_get_visits_blacklisted_transitions_are_excluded(visits):
+    assert visits.transition.isin(['reload', 'form_submit','auto_subframe','manual_subframe']).sum() == 0

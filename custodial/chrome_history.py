@@ -75,11 +75,11 @@ def get_visits(config):
     # https://developer.chrome.com/extensions/history#type-TransitionType
     transition_types = {
         0: 'link',
-        1: 'typed',
+        1: 'typed',            # Typed into search bar (also auto-suggest from search bar)
         2: 'auto_bookmark',
-        3: 'auto_subframe',
-        4: 'manual_subframe',
-        5: 'generated',
+        3: 'auto_subframe',    # Automatic navigation within a subframe
+        4: 'manual_subframe',  # Navigation within a subframe
+        5: 'generated',        # Did a search from the search bar, and chose an option)
         6: 'auto_toplevel',
         7: 'form_submit',
         8: 'reload',
@@ -87,4 +87,6 @@ def get_visits(config):
         10: 'keyword_generated'
     }
     visits['transition'] = visits['transition'].apply(lambda x: transition_types[x & 0x000000FF])
+    idx = visits.transition.isin(['reload', 'form_submit', 'auto_subframe', 'manual_subframe'])
+    visits.drop(visits.index[idx], inplace=True)
     return visits

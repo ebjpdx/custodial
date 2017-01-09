@@ -1,5 +1,3 @@
-import IPython
-
 import datetime
 import os
 import platform
