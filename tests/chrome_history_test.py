@@ -68,7 +68,8 @@ def test_get_visits_has_the_right_columns_and_types(visits):
         'visit_duration': 'int64',
         'from_visit': 'int64',
         'from_url': 'object',
-        'from_title': 'object'
+        'from_title': 'object',
+        'nweeks': 'int64'
     }
 
     dt = visits.dtypes.to_dict()
@@ -80,4 +81,6 @@ def test_get_visits_last_visit_time_values_are_reasonable(visits):
 
 
 def test_get_visits_blacklisted_transitions_are_excluded(visits):
-    assert visits.transition.isin(['reload', 'form_submit','auto_subframe','manual_subframe']).sum() == 0
+    assert visits.transition.isin(['reload', 'form_submit', 'auto_subframe', 'manual_subframe']).sum() == 0
+
+

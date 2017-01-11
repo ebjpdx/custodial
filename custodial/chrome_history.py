@@ -89,4 +89,8 @@ def get_visits(config):
     visits['transition'] = visits['transition'].apply(lambda x: transition_types[x & 0x000000FF])
     idx = visits.transition.isin(['reload', 'form_submit', 'auto_subframe', 'manual_subframe'])
     visits.drop(visits.index[idx], inplace=True)
+
+    # Add a count of unique weeks visited by URL
+    visits['nweeks'] = visits.groupby('url')['visit_week'].transform('nunique')
+
     return visits
