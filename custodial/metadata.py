@@ -11,7 +11,6 @@ bookmarks = Table('bookmarks', metadata,
                   )
 
 bookmark_exclusions = Table('bookmark_exclusions', metadata,
-                            Column('id', Integer, primary_key=True),
-                            Column('url_pattern', String, nullable=False),
+                            Column('url_pattern', String, primary_key=True),
                             Column('pattern_type', String, nullable=False)
                             )

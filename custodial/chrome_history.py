@@ -90,7 +90,7 @@ def get_visits(config):
     idx = visits.transition.isin(['reload', 'form_submit', 'auto_subframe', 'manual_subframe'])
     visits.drop(visits.index[idx], inplace=True)
 
-    # Add a count of unique weeks visited by URL
-    visits['nweeks'] = visits.groupby('url')['visit_week'].transform('nunique')
+    # Add a count of unique weeks visited by URL (for some reason to_numeric is needed to convert from a datetime)
+    visits['weeks_observed'] = pd.to_numeric(visits.groupby('url')['visit_week'].transform('nunique'))
 
     return visits
