@@ -19,6 +19,7 @@ def cnd(visits):
 
     cnd = visits[visits.weeks_observed >= 3].groupby(['url', 'weeks_observed'], as_index=False).agg(aggregation)
     cnd.columns = ['url', 'weeks_observed', 'first_week_observed', 'latest_week_observed', 'visit_count']
+    cnd.set_index('url', inplace=True)
     return cnd
 
 
@@ -59,16 +60,33 @@ def test_get_fails_when_method_does_not_return_a_data_frame():
         candidates.get(lambda x: list(range(0, 10)))
 
 
-def test_get_fails_when_candidates_does_not_have_a_column_called_url():
+def test_get_fails_when_candidates_is_not_indexed_by_url():
     with pytest.raises(TypeError):
-        candidates.get(lambda: pd.DataFrame({'not_url': ['a','b','c','d'], 'first_week_observed': ['a','b','c','d'], 'latest_week_observed': ['a','b','c','d']}))
+        df = pd.DataFrame({
+            'url': ['a', 'b', 'c', 'd'],  # Not an index
+            'first_week_observed': ['a', 'b', 'c', 'd'],
+            'latest_week_observed': ['a', 'b', 'c', 'd']
+        })
+        candidates.get(lambda: df)
 
 
 def test_get_fails_when_candidates_does_not_have_a_column_called_first_week_observed():
     with pytest.raises(TypeError):
-        candidates.get(lambda: pd.DataFrame({'url': ['a','b','c','d'], 'not_first_week_observed': ['a','b','c','d'], 'latest_week_observed': ['a','b','c','d']}))
+        df = pd.DataFrame({
+            'url': ['a', 'b', 'c', 'd'],
+            'not_first_week_observed': ['a', 'b', 'c', 'd'],
+            'latest_week_observed': ['a', 'b', 'c', 'd']
+        })
+        df.set_index('url', inplace=True)
+        candidates.get(lambda: df)
 
 
 def test_get_fails_when_candidates_does_not_have_a_column_called_last_week_observed():
     with pytest.raises(TypeError):
-        candidates.get(lambda: pd.DataFrame({'url': ['a','b','c','d'], 'first_week_observed': ['a','b','c','d'], 'not_latest_week_observed': ['a','b','c','d']}))
+        df = pd.DataFrame({
+            'url': ['a', 'b', 'c', 'd'],
+            'first_week_observed': ['a', 'b', 'c', 'd'],
+            'not_latest_week_observed': ['a', 'b', 'c', 'd']
+        })
+        df.set_index('url', inplace=True)
+        candidates.get(lambda: df)

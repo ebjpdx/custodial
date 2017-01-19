@@ -14,8 +14,12 @@ def by_usage_frequency(min_weeks_observed=3):
 
     candidates = (
         visits[visits.weeks_observed >= min_weeks_observed]
-        .groupby(['url', 'weeks_observed'], as_index=False)
+        .groupby(['url', 'weeks_observed'])
         .agg(aggregation)
     )
-    candidates.columns = ['url', 'weeks_observed', 'first_week_observed', 'latest_week_observed', 'visit_count']
+    candidates.columns = candidates.columns.get_level_values(1)
+    candidates = candidates[['first_week_observed', 'latest_week_observed', 'visit_count']]
+    candidates.reset_index(inplace=True)
+    candidates.set_index('url',inplace=True)
+    candidates
     return candidates

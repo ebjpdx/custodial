@@ -26,6 +26,7 @@ def identify_url_exclusions(hostnames):
 
 
 def filter_urls(candidates):
+    candidates.reset_index(inplace=True)
     schemes = candidates.url.apply(lambda u: urlparse(u).scheme)
     candidates = candidates[schemes.isin(VALID_SCHEMES)]
 
@@ -38,7 +39,9 @@ def filter_urls(candidates):
 def validate(candidates):
     if (type(candidates) != pd.core.frame.DataFrame):
         raise TypeError('Candidate recommenders need to return a pandas data frame')
-    for col in ['url', 'first_week_observed', 'latest_week_observed']:
+    if candidates.index.name != 'url':
+        raise TypeError('Candidate recommendation data frame should be indexed on url')
+    for col in ['first_week_observed', 'latest_week_observed']:
         if (col not in candidates.columns):
             raise TypeError("Candidate recommendations should contain a column called '{}'.".format(col))
 
