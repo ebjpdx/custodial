@@ -61,5 +61,14 @@ def test_get_fails_when_method_does_not_return_a_data_frame():
 
 def test_get_fails_when_candidates_does_not_have_a_column_called_url():
     with pytest.raises(TypeError):
-        candidates.get(lambda: pd.DataFrame({'not_url': ['a','b','c','d']}))
+        candidates.get(lambda: pd.DataFrame({'not_url': ['a','b','c','d'], 'first_week_observed': ['a','b','c','d'], 'latest_week_observed': ['a','b','c','d']}))
 
+
+def test_get_fails_when_candidates_does_not_have_a_column_called_first_week_observed():
+    with pytest.raises(TypeError):
+        candidates.get(lambda: pd.DataFrame({'url': ['a','b','c','d'], 'not_first_week_observed': ['a','b','c','d'], 'latest_week_observed': ['a','b','c','d']}))
+
+
+def test_get_fails_when_candidates_does_not_have_a_column_called_last_week_observed():
+    with pytest.raises(TypeError):
+        candidates.get(lambda: pd.DataFrame({'url': ['a','b','c','d'], 'first_week_observed': ['a','b','c','d'], 'not_latest_week_observed': ['a','b','c','d']}))

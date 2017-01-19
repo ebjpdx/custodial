@@ -38,8 +38,9 @@ def filter_urls(candidates):
 def validate(candidates):
     if (type(candidates) != pd.core.frame.DataFrame):
         raise TypeError('Candidate recommenders need to return a pandas data frame')
-    if ('url' not in candidates.columns):
-        raise TypeError('Candidate recommendations should contain a column called "url".')
+    for col in ['url', 'first_week_observed', 'latest_week_observed']:
+        if (col not in candidates.columns):
+            raise TypeError("Candidate recommendations should contain a column called '{}'.".format(col))
 
 
 def get(method, **kwargs):
