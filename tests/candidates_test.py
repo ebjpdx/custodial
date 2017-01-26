@@ -43,14 +43,14 @@ def test_identify_url_exclusions_removes_hostnames_in_bookmark_exclusions(hostna
 
 def test_filter_urls_contains_only_valid_schemes(cnd):
     cd = candidates.filter_urls(cnd)
-    schemes = cd.url.apply(lambda u: urlparse(u).scheme)
+    schemes = cd.reset_index().url.apply(lambda u: urlparse(u).scheme)
 
     assert set(schemes.unique()).issubset(set(candidates.VALID_SCHEMES))
 
 
 def test_filter_urls_removes_excluded_hostnames(cnd):
     cd = candidates.filter_urls(cnd)
-    hostnames = cd.url.apply(lambda u: urlparse(u).hostname)
+    hostnames = cd.reset_index().url.apply(lambda u: urlparse(u).hostname)
 
     assert set(hostnames.unique()).isdisjoint(set(excluded_hostnames()))
 

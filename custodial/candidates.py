@@ -33,7 +33,7 @@ def filter_urls(candidates):
     hostnames = candidates.url.apply(lambda u: urlparse(u).hostname)
     candidates = candidates.drop(identify_url_exclusions(hostnames))
 
-    return candidates
+    return candidates.set_index('url')
 
 
 def validate(candidates):

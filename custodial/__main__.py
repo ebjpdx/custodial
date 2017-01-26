@@ -1,6 +1,6 @@
 import platform
 
-from custodial import chrome_history, candidates, candidate_recommenders
+from custodial import chrome_history, candidates, candidate_recommenders, bookmarks
 from custodial.config import config
 
 
@@ -12,6 +12,5 @@ chrome_history.make_local_copy(config)
 urls = chrome_history.get_urls(config)
 visits = chrome_history.get_visits(config)
 freq_candidates = candidates.get(candidate_recommenders.by_usage_frequency)
-# bookmarker.add(urls)
+bookmarks.append(freq_candidates)
 
-# Should I create classes, or remain functional?
